@@ -3,6 +3,8 @@ library(xlsx)
 financ_data_su <- read.xlsx("~/Downloads/FinanceAnalyst_HomeworkData.xlsx", sheetName = "Signups")
 
 financ_data_events <- read.xlsx("~/Downloads/FinanceAnalyst_HomeworkData.xlsx", sheetName = "Events")
+str(financ_data_events)
+financ_data_events$User.ID <- as.character(financ_data_events$User.ID)
 
 save(financ_data_su, financ_data_events, file = "finance_r_data.RDA")
 load(file = "finance_r_data.RDA")
@@ -61,5 +63,3 @@ title(main = "Event End Each Month", font.main = 4)
 title(xlab = "Month")
 title(ylab = "Event End Counts")
 
-str(financ_data_events)
-financ_data_events$User.ID <- as.character(financ_data_events$User.ID)
