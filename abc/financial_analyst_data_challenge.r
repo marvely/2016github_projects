@@ -109,5 +109,20 @@ first_event_end_dt <- sqldf('select "User.ID",
                             group by "User.ID"')
 # signup date per customer
 # should we check the duplicate in signup table?
+aggr_dup_customer_dt <- financ_data_su_dt[, .N, by = User.ID]
+# no dup
+rm(aggr_dup_customer_dt)
+
+# join two tables
+financ_data_su_dt$Signup.Date <- as.character(financ_data_su_dt$Signup.Date)
+join_cus_date <- sqldf('select s."User.ID" as user_id,
+                               s."Signup.Date" as signup_date,
+                               e.first_end_date
+                      from financ_data_su_dt as s
+                      left join first_event_end_dt as e
+                      on s."User.ID" = e."User.ID"
+                      ')
+# 4104 customers have at least 1 event end date,
+# however total 30150 unique user id we have
 
 
