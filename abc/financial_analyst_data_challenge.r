@@ -22,7 +22,6 @@ financ_data_su_dt <- data.table(financ_data_su)
 
 # aggr by month
 aggr_su_dt <- financ_data_su_dt[, .N, by = month]
-head(aggr_su_dt)
 # how to sort by col in data table?
 aggr_su_dt = aggr_su_dt[order(month, descending = F), ]
 barplot(aggr_su_dt$N, main="question 1", xlab="Month", ylab="Signup Counts", names.arg=aggr_su_dt$month)
@@ -44,6 +43,16 @@ title(main = "Yearly Trend", font.main = 4)
 title(xlab = "Year")
 title(ylab = "Signup Counts")
 
+# +++++++++++++ doing the same thing over again for event_end ++++++++++++++ #
+# need to write a function to do it every time...
+financ_data_events$month <- format(financ_data_events$Event.End.Date, '%Y-%m')
+financ_data_events$year <- format(financ_data_events$Event.End.Date, '%Y')
+financ_data_e_dt <- data.table(financ_data_events)
+
+# aggr by month
+aggr_e_dt <- financ_data_e_dt[, .N, by = month]
+# how to sort by col in data table?
+aggr_e_dt = aggr_e_dt[order(month, descending = F), ]
 
 
 str(financ_data_events)
