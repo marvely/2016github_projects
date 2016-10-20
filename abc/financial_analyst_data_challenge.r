@@ -83,3 +83,31 @@ title(main = "Unique Customer Counts by Month", font.main = 4)
 title(xlab = "Month")
 title(ylab = "Unique Customer Counts")
 
+join_aggr_by_month <- cbind(aggr_e_dt, aggr_uniq_user_dt$`#_Unique_Customers`)
+colnames(join_aggr_by_month)[3] <- "#_Unique_customers"
+
+join_aggr_by_month$avg_event_per_customer <-join_aggr_by_month$N / join_aggr_by_month$`#_Unique_customers`
+
+# plot the avg by month
+avg_range <- range(0, join_aggr_by_month$avg_event_per_customer)
+plot(join_aggr_by_month$avg_event_per_customer, type = "o", axes = F, ann = F )
+
+axis(1, at = 1:nrow(join_aggr_by_month), lab = join_aggr_by_month$month)
+axis(2, las = 1, at = 0.5*0:avg_range[2])
+
+title(main = "Avg End Events per Customer Per Month", font.main = 4)
+title(xlab = "Month")
+title(ylab = "Ratio (End Events / Unique Customer)")
+
+# +++++++++++++++++ #
+# join by customer id?
+# first event ending, min(end date)
+financ_data_e_dt$Event.End.Date <- as.character(financ_data_e_dt$Event.End.Date)
+first_event_end_dt <- sqldf('select "User.ID",
+                                    min("Event.End.Date") as first_end_date
+                            from financ_data_e_dt
+                            group by "User.ID"')
+# signup date per customer
+# should we check the duplicate in signup table?
+
+
