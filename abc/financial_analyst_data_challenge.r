@@ -124,5 +124,11 @@ join_cus_date <- sqldf('select s."User.ID" as user_id,
                       ')
 # 4104 customers have at least 1 event end date,
 # however total 30150 unique user id we have
+join_cus_date_update <- sqldf('select *
+                              from join_cus_date
+                              where first_end_date is not NULL')
+# only 3509 customers included in signup date?
+# there are 4104 customers who has first event end date?
+# what is going on?
 
 
