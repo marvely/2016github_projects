@@ -141,19 +141,30 @@ join_cus_date_update <- sqldf('select *
 # only 3509 customers included in signup date?
 join_cus_date_update$time_passed <- difftime(strptime(join_cus_date_update$first_end_date, format = "%Y-%m-%d"), strptime(join_cus_date_update$signup_date, format = "%Y-%m-%d"), units = "days" )
 # avg across customers
-mean(join_cus_date_update$time_passed)
+avg_period <- mean(join_cus_date_update$time_passed)
 
-# weighted by revenue?
-weighted.mean(x = join_cus_date_update$time_passed, w = join_cus_date_update$Revenue)
+# weighted by revenue
+weighted_avg_period <- weighted.mean(x = join_cus_date_update$time_passed, w = join_cus_date_update$Revenue)
 
 # looks like revenue weights heavier on longer period customers.
 # translate to business language, customers who stay with us longer produce more revenue than newer customers.
+# wait... turns out not the case in the next part of analysis, looks like there's a outlier or something impacted the mean~~~~
 
 # ++++++++++++++++++++++++++ revenue projection/prediction ++++++++++++++++++++++++ #
 
+# variables: time_passed, month/year started, month/year first end, ...
+summary(join_cus_date_update$Revenue)
+# revenue is skewed to the left, with a long tail to the right.
+plot(join_cus_date_update$Revenue)
+hist(join_cus_date_update$Revenue, main = "Revenue distribution")
+#
+# more or less looks like a normal distribution
+hist(log(join_cus_date_update$Revenue+1.3), main = "Log Transformed Revenue distribution")
+join_cus_date_update$time_passed <- as.numeric(join_cus_date_update$time_passed)
 
-
-
-
+# check correlation first
+cor(join_cus_date_update$time_passed, join_cus_date_update$Revenue)
+cor(join_cus_date_update$time_passed, log(join_cus_date_update$Revenue+1.3))
+# really really low!!! after transformation, even lower... k...
 
 
