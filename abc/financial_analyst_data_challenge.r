@@ -53,7 +53,13 @@ financ_data_e_dt <- data.table(financ_data_events)
 aggr_e_dt <- financ_data_e_dt[, .N, by = month]
 # how to sort by col in data table?
 aggr_e_dt = aggr_e_dt[order(month, descending = F), ]
-
+e_range <- range(0, aggr_e_dt$N)
+plot(aggr_e_dt$N, type = "o", axes = F, ann = F)
+axis(1, at = 1: nrow(aggr_e_dt), lab = aggr_e_dt$month)
+axis(2, las = 1, at = 200 * 0:e_range[2])
+title(main = "Event End Each Month", font.main = 4)
+title(xlab = "Month")
+title(ylab = "Event End Counts")
 
 str(financ_data_events)
 financ_data_events$User.ID <- as.character(financ_data_events$User.ID)
