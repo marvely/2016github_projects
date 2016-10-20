@@ -103,10 +103,18 @@ title(ylab = "Ratio (End Events / Unique Customer)")
 # join by customer id?
 # first event ending, min(end date)
 financ_data_e_dt$Event.End.Date <- as.character(financ_data_e_dt$Event.End.Date)
-first_event_end_dt <- sqldf('select "User.ID",
-                                    min("Event.End.Date") as first_end_date
-                            from financ_data_e_dt
-                            group by "User.ID"')
+first_event_end_dt <- sqldf('select a."User.ID",
+                                    a.first_end_date,
+                                    b.Revenue
+                             from (select "User.ID",
+                                  min("Event.End.Date") as first_end_date
+                                  from financ_data_e_dt
+                                  group by "User.ID"
+                                  ) as a
+                            join financ_data_e_dt as b
+                            on a."User.ID"= b."User.ID"
+                               and a.first_end_date = b."Event.End.Date"
+                            ')
 # signup date per customer
 # should we check the duplicate in signup table?
 aggr_dup_customer_dt <- financ_data_su_dt[, .N, by = User.ID]
@@ -117,7 +125,8 @@ rm(aggr_dup_customer_dt)
 financ_data_su_dt$Signup.Date <- as.character(financ_data_su_dt$Signup.Date)
 join_cus_date <- sqldf('select s."User.ID" as user_id,
                                s."Signup.Date" as signup_date,
-                               e.first_end_date
+                               e.first_end_date,
+                               e.Revenue
                       from financ_data_su_dt as s
                       left join first_event_end_dt as e
                       on s."User.ID" = e."User.ID"
@@ -127,8 +136,24 @@ join_cus_date <- sqldf('select s."User.ID" as user_id,
 join_cus_date_update <- sqldf('select *
                               from join_cus_date
                               where first_end_date is not NULL')
-# only 3509 customers included in signup date?
+
 # there are 4104 customers who has first event end date?
-# what is going on?
+# only 3509 customers included in signup date?
+join_cus_date_update$time_passed <- difftime(strptime(join_cus_date_update$first_end_date, format = "%Y-%m-%d"), strptime(join_cus_date_update$signup_date, format = "%Y-%m-%d"), units = "days" )
+# avg across customers
+mean(join_cus_date_update$time_passed)
+
+# weighted by revenue?
+weighted.mean(x = join_cus_date_update$time_passed, w = join_cus_date_update$Revenue)
+
+# looks like revenue weights heavier on longer period customers.
+# translate to business language, customers who stay with us longer produce more revenue than newer customers.
+
+# ++++++++++++++++++++++++++ revenue projection/prediction ++++++++++++++++++++++++ #
+
+
+
+
+
 
 
