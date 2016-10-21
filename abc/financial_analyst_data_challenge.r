@@ -167,4 +167,21 @@ cor(join_cus_date_update$time_passed, join_cus_date_update$Revenue)
 cor(join_cus_date_update$time_passed, log(join_cus_date_update$Revenue+1.3))
 # really really low!!! after transformation, even lower... k...
 
-
+# what else should we use? number of users? number of unique users
+# group by month then avg over Revenue and count the total # of users
+aggr_join_cus_date_update <- sqldf('select substr(first_end_date, 1, 7) as first_end_month,
+                                           user_id,
+                                           signup_date,
+                                           first_end_date,
+                                           Revenue
+                                    from join_cus_date_update')
+aggr_join_cus_date_update <- sqldf('select first_end_month,
+                                           count(user_id) as count_users,
+                                           sum(Revenue) as monthly_revenue
+                                  from aggr_join_cus_date_update
+                                  group by first_end_month
+                                  ')
+cor(aggr_join_cus_date_update$count_users, aggr_join_cus_date_update$monthly_revenue)
+# although users and revenue is highly correlated, would it be available to us?
+# we may also need to predict how many users will have the event 
+# i feel like this is easier if done in tableau???
